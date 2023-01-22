@@ -16,13 +16,14 @@ const int tempoInterChar = 3 * tempoDit;
 const int tempoWordSpace = 7 * tempoDit;
 const unsigned long attente = 3600000ul; // 1 heure en millisecondes // tempo entre les messages en minutes
 const unsigned char PTT = 12;
-const int batterieMode = 11;
+const unsigned char batterieMode = 11;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
+  // initialize digital pin LED_BUILTIN (13) ad 12 as an output.
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(PTT, OUTPUT);
+   // initialize digital pin 11 as an input.
   pinMode(batterieMode, INPUT);
   Serial.begin(115200);                       // configuration de la voie série à 115200 bauds
 }
