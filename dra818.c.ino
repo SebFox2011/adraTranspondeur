@@ -22,13 +22,12 @@ SoftwareSerial *dra_serial; // Serial connection vers DRA818
 DRA818 *dra;                // instance de l'objet DRA
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("Initialisations liaison série pc et DRA818 ...");
   Serial.println("Démarrage arduino ...");
   Serial.println("initialisation I/O ... ");
   pinMode(PD, OUTPUT);
   digitalWrite(PD, HIGH);
-
-  Serial.println("Initialisations liaison série pc et DRA818 ...");
-  Serial.begin(9600);
   dra_serial = new SoftwareSerial(RX, TX); // Instantiate the Software Serial Object.
 
 
