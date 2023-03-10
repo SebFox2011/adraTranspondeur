@@ -10,16 +10,20 @@
 */
 
 #include <stdio.h>
+#include <cww_MorseTx.h>
 #include <SoftwareSerial.h>
 #include "DRA818.h"
 
+#define PIN_LED 13
 #define PTT     12  // PTT pin. Actif à l'état haut, drive un transistor.
 #define BAT     8  // Réception du signal batterie ou secteur 
 #define PD      10  // PD du DRA818
 #define RX      3   // arduino serial RX pin to the DRA818 TX pin
 #define TX      4   // arduino serial TX pin to the DRA818 RX pin
-#define tonePin 11  // PWM pin pour gérer le mode tone (symbole ~).
-int toneFreq=700; //Tone frequency. Usually between 500 and 900 Hz.
+#define TONEPIN 11  // PWM pin pour gérer le mode tone (symbole ~).
+#define CW_SPEED 25
+
+#define TONE_FREQ 800
 
 SoftwareSerial *dra_serial; // Serial connection vers DRA818
 DRA818 *dra;                // instance de l'objet DRA
@@ -31,7 +35,7 @@ const int tempoInterChar = 3 * tempoDit;
 const int tempoWordSpace = 7 * tempoDit;
 const unsigned long attente = 3600000ul; // 1 heure en millisecondes // tempo entre les messages en minutes
 
-
+cww_MorseTx morseWithTone(PIN_LED, CW_SPEED,TONEPIN,  TONE_FREQ); // Initialisation du mode morse avec tone sur pin 11
 // the setup function runs once when you press reset or power the board
 void setup() {
   Serial.begin(9600);// configuration de la voie série à 9600 bauds
@@ -47,7 +51,7 @@ void setup() {
   pinMode(PTT, OUTPUT);
   // initialize digital pin 11 as an input.
   pinMode(BAT, INPUT);
-  noTone(tonePin);
+  
   // Configuration du DRA818 squelch 4, volume 8, pas de  ctcss, 12.5 kHz bande passante, tous les filtres activés
   dra = DRA818::configure(dra_serial, DRA818_UHF, 439.9625, 439.9625, 4, 8, 0, 0, DRA818_25K, true, true, true, &Serial);
   if (!dra) {
@@ -70,102 +74,10 @@ void loop() {
 }
 
 void message() {
-  point(); //Message à transmettre F4JRN
-  delay(tempoIntraChar);
-  point(); //F
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  point(); //4
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  point(); //J
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  point(); //R
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  tiret();//N
-  delay(tempoIntraChar);
-  point();
-  delay(tempoWordSpace);
-
-  // puis le locator IN98HC
-  point();//I
-  delay(tempoInterChar);                       // wait for a 1/2second
-  tiret();//N
-  delay(tempoIntraChar);
-  point();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  tiret();//9
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  tiret();//8
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoInterChar);                       // wait for a 1/2second
-  point();//H
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoInterChar);
-  tiret();//C
-  delay(tempoIntraChar);
-  point();
-  delay(tempoIntraChar);
-  tiret();
-  delay(tempoIntraChar);
-  point();
-  delay(tempoWordSpace);
-
+  morseWithTone.send("F4JRN IN98HC");
+  
   if (digitalRead(BAT) == HIGH) { // Mode batterie, on transmet BAT
-    delay(tempoInterChar);                       // wait for a 1/2second
-    tiret(); //B
-    delay(tempoIntraChar);
-    point();
-    delay(tempoIntraChar);
-    point();
-    delay(tempoIntraChar);
-    point();
-    delay(tempoInterChar);                       // wait for a 1/2second
-    point(); //A
-    delay(tempoIntraChar);
-    tiret();
-    delay(tempoInterChar);                       // wait for a 1/2second
-    tiret();//T
+   morseWithTone.send("BAT");
   }
 }
 
@@ -175,24 +87,6 @@ void delay1h() {
     delay(1000);                       // wait for a 3second
     Serial.println(t);
   }
-}
-
-void point () {
-  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  tone(tonePin, toneFreq);
-  delay(tempoDit);
-  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-  noTone(tonePin);
-  delay(tempoDit);
-}
-
-void tiret () {
-  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-   tone(tonePin, toneFreq);
-  delay(tempoDah);
-  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-   noTone(tonePin);
-  delay(tempoDit);
 }
 
 void activePTT() {
