@@ -14,10 +14,12 @@
 #include "DRA818.h"
 
 #define PTT     12  // PTT pin. Actif à l'état haut, drive un transistor.
-#define BAT     11  // Réception du signal batterie ou secteur 
+#define BAT     8  // Réception du signal batterie ou secteur 
 #define PD      10  // PD du DRA818
 #define RX      3   // arduino serial RX pin to the DRA818 TX pin
 #define TX      4   // arduino serial TX pin to the DRA818 RX pin
+#define tonePin 11  // PWM pin pour gérer le mode tone (symbole ~).
+int toneFreq=700; //Tone frequency. Usually between 500 and 900 Hz.
 
 SoftwareSerial *dra_serial; // Serial connection vers DRA818
 DRA818 *dra;                // instance de l'objet DRA
@@ -45,7 +47,7 @@ void setup() {
   pinMode(PTT, OUTPUT);
   // initialize digital pin 11 as an input.
   pinMode(BAT, INPUT);
-
+  noTone(tonePin);
   // Configuration du DRA818 squelch 4, volume 8, pas de  ctcss, 12.5 kHz bande passante, tous les filtres activés
   dra = DRA818::configure(dra_serial, DRA818_UHF, 439.9625, 439.9625, 4, 8, 0, 0, DRA818_25K, true, true, true, &Serial);
   if (!dra) {
@@ -177,22 +179,26 @@ void delay1h() {
 
 void point () {
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+  tone(tonePin, toneFreq);
   delay(tempoDit);
   digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+  noTone(tonePin);
   delay(tempoDit);
 }
 
 void tiret () {
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+   tone(tonePin, toneFreq);
   delay(tempoDah);
   digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+   noTone(tonePin);
   delay(tempoDit);
 }
 
 void activePTT() {
   Serial.println("active ptt ");
   digitalWrite(PTT, HIGH); // PTT on.
-  delay(500);
+  delay(800);
 }
 void unactivePTT() {
   Serial.println("desactive ptt ");
