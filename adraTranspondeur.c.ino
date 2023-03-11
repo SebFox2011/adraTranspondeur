@@ -92,8 +92,10 @@ void loop() {
     Serial.println("Mise à l'heure");
     setDate();//Comment once the date is set en envoyant 230310w102300x
   }
-  readRTC();
+  //readRTC();
   if (Clock.getMinute() == 0 || Clock.getMinute() == 30 || digitalRead(EMET) == HIGH) {
+    Serial.println("envoi morse");
+    readRTC();
     activePTT();
     message();
     unactivePTT();
@@ -133,7 +135,7 @@ void readRTC( ) { /* function readRTC */
   Serial.print(Clock.getMinute(), DEC);
   Serial.print(":");
   Serial.println(Clock.getSecond(), DEC);
-  delay(1000);
+  //delay(1000);
 }
 void setDate( ) { /* function setDate */
   ////Set Real Time Clock
