@@ -75,7 +75,7 @@ void setup() {
   pinMode(SETTIME, INPUT);
 
   // Configuration du DRA818 squelch 4, volume 8, pas de  ctcss, 12.5 kHz bande passante, tous les filtres activés
-  dra = DRA818::configure(dra_serial, DRA818_UHF, 439.9625, 439.9625, 4, 8, 0, 0, DRA818_25K, true, true, true, &Serial);
+  dra = DRA818::configure(dra_serial, DRA818_UHF, 439.9625, 439.9625, 4, 8, 0007, 0007, DRA818_12K5, true, true, true, &Serial);
   if (!dra) {
     Serial.println("\nErreur liée à la configuration du DRA818");
     return;
@@ -88,7 +88,7 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  if (digitalRead(BAT) == HIGH) {
+  if (digitalRead(SETTIME) == HIGH) {
     Serial.println("Mise à l'heure");
     setDate();//Comment once the date is set en envoyant 230310w102300x
   }
