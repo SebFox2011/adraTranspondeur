@@ -94,7 +94,6 @@ void loop() {
   }
   //readRTC();
   if (Clock.getMinute() == 0 || Clock.getMinute() == 30 || digitalRead(EMET) == HIGH) {
-    Serial.println("envoi morse");
     readRTC();
     activePTT();
     message();
@@ -105,6 +104,7 @@ void loop() {
 }
 
 void message() {
+  Serial.println("envoi morse");
   morseWithTone.send("F4JRN IN98HC");
   if (digitalRead(BAT) == HIGH) { // Mode batterie, on transmet BAT
     morseWithTone.send("BAT");
